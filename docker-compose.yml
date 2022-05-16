@@ -1,0 +1,32 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "3000:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+  node-app-container:
+    build: .
+    # ports:
+    #   - "3000:3000"
+    env_file:
+      - ./.env
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=hammad
+      - MONGO_INITDB_ROOT_PASSWORD=mypassword
+    volumes:
+      # Named volumes, we have to describe the names in volumes section so that any other service can access it
+      - mongo-db:/data/db
+  redis:
+    image: redis
+
+# name of all volumes
+volumes:
+  mongo-db:
